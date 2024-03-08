@@ -1,7 +1,7 @@
 [project]
-name = "QuickStorage"
+name = "Mira-py-devkit"
 version = "0.1.0"
-description = "A simple and easy-to-use storage wapper api for Python."
+description = ""
 authors = [
     {name = "Lyon", email = "lyon@lyonyu.me"},
 ]
