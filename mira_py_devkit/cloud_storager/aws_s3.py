@@ -7,7 +7,7 @@ class AmazonS3:
     VALID_ACL = ["private", "public-read", "public-read-write", "authenticated-read", "aws-exec-read",
                  "bucket-owner-read", "bucket-owner-full-control", "log-delivery-write"]
 
-    def __init__(self, aws_access_key_id: str, aws_secret_access_key: str) -> None:
+    def __init__(self, aws_access_key_id: str, aws_secret_access_key: str, endpoint_url=None) -> None:
         """
         @type aws_access_key_id: str
         @param aws_access_key_id: AWS's access key ID.
@@ -20,6 +20,7 @@ class AmazonS3:
         self.s3_raw_client = boto3.client(
             "s3",
             aws_access_key_id=aws_access_key_id,
+            endpoint_url=endpoint_url,
             aws_secret_access_key=aws_secret_access_key
         )
 
@@ -91,3 +92,7 @@ class AmazonS3:
         # Construct the public URL of the image in S3
         public_url = f"https://{bucket_domain}/{object_name}" if bucket_domain else f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
         return public_url
+
+
+class CloudflareR2(AmazonS3):
+    pass
