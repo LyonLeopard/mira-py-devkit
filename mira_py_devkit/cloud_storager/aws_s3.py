@@ -95,4 +95,13 @@ class AmazonS3:
 
 
 class CloudflareR2(AmazonS3):
-    pass
+    def __init__(self, aws_access_key_id: str, aws_secret_access_key: str, endpoint_url: str) -> None:
+        """
+        @type aws_access_key_id:
+        @param aws_access_key_id
+        @type aws_secret_access_key:
+        @param aws_secret_access_key:
+        @type endpoint_url:str
+        @param endpoint_url:check your bucket /settings -> Bucket Details -> S3 API for the endpoint, do not include the stuff after '.com'
+        """
+        super().__init__(aws_access_key_id, aws_secret_access_key, endpoint_url)
