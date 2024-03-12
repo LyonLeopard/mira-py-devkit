@@ -4,10 +4,20 @@ from io import BytesIO
 
 
 class AmazonS3:
-    VALID_ACL = ["private", "public-read", "public-read-write", "authenticated-read", "aws-exec-read",
-                 "bucket-owner-read", "bucket-owner-full-control", "log-delivery-write"]
+    VALID_ACL = [
+        "private",
+        "public-read",
+        "public-read-write",
+        "authenticated-read",
+        "aws-exec-read",
+        "bucket-owner-read",
+        "bucket-owner-full-control",
+        "log-delivery-write",
+    ]
 
-    def __init__(self, aws_access_key_id: str, aws_secret_access_key: str, endpoint_url=None) -> None:
+    def __init__(
+        self, aws_access_key_id: str, aws_secret_access_key: str, endpoint_url=None
+    ) -> None:
         """
         @type aws_access_key_id: str
         @param aws_access_key_id: AWS's access key ID.
@@ -21,7 +31,7 @@ class AmazonS3:
             "s3",
             aws_access_key_id=aws_access_key_id,
             endpoint_url=endpoint_url,
-            aws_secret_access_key=aws_secret_access_key
+            aws_secret_access_key=aws_secret_access_key,
         )
 
     def _check_acl(self, acl: str) -> None:
@@ -33,10 +43,17 @@ class AmazonS3:
         """
         if acl and acl not in self.VALID_ACL:
             raise ValueError(
-                f"Invalid ACL: {acl}. Please check the https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl for valid ACLs.")
+                f"Invalid ACL: {acl}. Please check the https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl for valid ACLs."
+            )
 
-    def upload_from_local_file(self, file_path: str, bucket_name: str, object_name: str, acl: str = "public-read",
-                               bucket_domain: str = "") -> str:
+    def upload_from_local_file(
+        self,
+        file_path: str,
+        bucket_name: str,
+        object_name: str,
+        acl: str = "public-read",
+        bucket_domain: str = "",
+    ) -> str:
         """
         Upload a file from local to S3, and return the public URL of the uploaded file.
         @type file_path: str
@@ -53,18 +70,25 @@ class AmazonS3:
         @return: The public URL of the uploaded file.
         """
         self.s3_raw_client.upload_file(
-            file_path,
-            bucket_name,
-            object_name,
-            ExtraArgs={"ACL": acl}
+            file_path, bucket_name, object_name, ExtraArgs={"ACL": acl}
         )
 
         # Construct the public URL of the image in S3
-        public_url = f"https://{bucket_domain}/{object_name}" if bucket_domain else f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
+        public_url = (
+            f"https://{bucket_domain}/{object_name}"
+            if bucket_domain
+            else f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
+        )
         return public_url
 
-    def upload_from_url(self, url: str, bucket_name: str, object_name: str, acl: str = "public-read",
-                        bucket_domain: str = "") -> str:
+    def upload_from_url(
+        self,
+        url: str,
+        bucket_name: str,
+        object_name: str,
+        acl: str = "public-read",
+        bucket_domain: str = "",
+    ) -> str:
         """
         Download the file from the URL, and then upload to S3. Finally return the public URL of the uploaded file.
         @type url: str
@@ -83,19 +107,22 @@ class AmazonS3:
         response = requests.get(url)
         response.raise_for_status()
         self.s3_raw_client.put_object(
-            Bucket=bucket_name,
-            Key=object_name,
-            Body=BytesIO(response.content),
-            ACL=acl
+            Bucket=bucket_name, Key=object_name, Body=BytesIO(response.content), ACL=acl
         )
 
         # Construct the public URL of the image in S3
-        public_url = f"https://{bucket_domain}/{object_name}" if bucket_domain else f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
+        public_url = (
+            f"https://{bucket_domain}/{object_name}"
+            if bucket_domain
+            else f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
+        )
         return public_url
 
 
 class CloudflareR2(AmazonS3):
-    def __init__(self, aws_access_key_id: str, aws_secret_access_key: str, endpoint_url: str) -> None:
+    def __init__(
+        self, aws_access_key_id: str, aws_secret_access_key: str, endpoint_url: str
+    ) -> None:
         """
         @type aws_access_key_id:
         @param aws_access_key_id
